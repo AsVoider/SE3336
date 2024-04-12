@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +22,7 @@ class TicketDaoImplTest {
     @Test
     @Transactional
     @Rollback(value = true)
-    @DisplayName("save tickets")
+    @DisplayName("Save Tickets")
     void saveTicket() {
         Ticket ticket = new Ticket();
         Integer state = 1111;
@@ -29,5 +30,16 @@ class TicketDaoImplTest {
         Ticket ticket1 = ticketDao.saveTicket(ticket);
         Assertions.assertNotEquals(0, ticket1.getId());
         Assertions.assertEquals(state, ticket1.getState());
+    }
+
+    @Test
+    @Transactional
+    @Rollback(value = true)
+    @DisplayName("Save Illegal Tickets")
+    void saveIllegalTickets() {
+        Ticket ticket = null;
+        assertThrows(InvalidDataAccessApiUsageException.class, () -> {
+            ticketDao.saveTicket(ticket);
+        });
     }
 }
