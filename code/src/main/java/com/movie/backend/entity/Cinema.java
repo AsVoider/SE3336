@@ -25,7 +25,7 @@ public class Cinema {
     private Integer distance;
     @Basic
     @Column(name = "location")
-    private Object location;
+    private String location;
     @Basic
     @Column(name = "min_price")
     private BigDecimal minPrice;
@@ -70,11 +70,11 @@ public class Cinema {
         this.distance = distance;
     }
 
-    public Object getLocation() {
+    public String  getLocation() {
         return location;
     }
 
-    public void setLocation(Object location) {
+    public void setLocation(String location) {
         this.location = location;
     }
 

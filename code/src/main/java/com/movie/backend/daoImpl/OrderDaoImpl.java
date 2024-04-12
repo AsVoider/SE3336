@@ -26,7 +26,7 @@ public class OrderDaoImpl implements OrderDao {
 
     @Override
     public Order getOrderById(Integer id) {
-        return orderRepository.findOrderByIdIs(id);
+        return orderRepository.findOrderById(id);
     }
 
     @Override

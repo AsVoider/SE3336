@@ -50,7 +50,7 @@ class OrderServiceImplTest {
     @Test
     @DisplayName("get order by orderId")
     void getOrderById() {
-        Integer orderId = 15;
+        Integer orderId = 1;
         OrderVM orderVM = orderService.getOrderById(orderId);
         Assertions.assertNotNull(orderVM);
         Assertions.assertEquals(orderId, orderVM.getId());
