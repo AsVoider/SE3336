@@ -119,6 +119,8 @@ class CinemaControllerTest {
         Assertions.assertNotNull(res1);
         Assertions.assertEquals("big banana", res1.getName());
         Assertions.assertEquals("SJTU", res1.getAddress());
+
+        //不会触发rollback。
     }
 
     @Test
