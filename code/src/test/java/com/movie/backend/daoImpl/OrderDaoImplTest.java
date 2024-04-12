@@ -121,4 +121,16 @@ class OrderDaoImplTest {
         orders = orderDao.getOrdersByUserId(1);
         assert (orders.isEmpty() || orders.get(0).getId() != deleteId);
     }
+
+    @Test
+    @Transactional
+    @Rollback(value = true)
+    @DisplayName("Test Wrong Delete")
+    void TestDeleteWrong() {
+        try {
+            orderDao.deleteOrder(-123);
+        } catch (Exception e) {
+            assert (true);
+        }
+    }
 }
