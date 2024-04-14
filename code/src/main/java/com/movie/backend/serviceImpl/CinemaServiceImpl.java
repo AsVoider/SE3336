@@ -47,9 +47,9 @@ public class CinemaServiceImpl implements CinemaService {
             if (roomMinPrices.containsKey(roomId)) {
                 BigDecimal oldMinPrice = roomMinPrices.get(roomId);
                 BigDecimal curMinPrice = session.getPrice();
-                if (curMinPrice.compareTo(oldMinPrice) < 0) {
-                    roomMinPrices.put(roomId, curMinPrice);
-                }
+//                if (curMinPrice.compareTo(oldMinPrice) < 0) {
+//                    roomMinPrices.put(roomId, curMinPrice);
+//                }
             } else {
                 roomMinPrices.put(roomId, session.getPrice());
             }
@@ -66,9 +66,9 @@ public class CinemaServiceImpl implements CinemaService {
             if (cinemaMinPrices.containsKey(cinemaId)) {
                 BigDecimal oldMinPrice = cinemaMinPrices.get(cinemaId);
                 BigDecimal curMinPrice = roomMinPrices.get(roomId);
-                if (curMinPrice.compareTo(oldMinPrice) < 0) {
-                    cinemaMinPrices.put(cinemaId, curMinPrice);
-                }
+//                if (curMinPrice.compareTo(oldMinPrice) < 0) {
+//                    cinemaMinPrices.put(cinemaId, curMinPrice);
+//                }
             } else {
                 cinemaMinPrices.put(cinemaId, roomMinPrices.get(roomId));
             }

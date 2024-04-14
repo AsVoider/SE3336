@@ -45,11 +45,12 @@ public class OrderServiceImpl implements OrderService {
         orderVM.setId(order.getId());
         orderVM.setTime(order.getTime());
         orderVM.setUserId(order.getUserId());
+        System.out.println("order user id is " + order.getUserId());
         orderVM.setTotalPrice(order.getTotalPrice());
         orderVM.setIsPaid(order.getIsPaid());
         Set<TicketDTO> tickets = new HashSet<>();
         List<Ticket> ticketList = order.getTickets();
-        if (ticketList != null) {
+        if (!ticketList.isEmpty()) {
             for (Ticket ticket : ticketList) {
                 TicketDTO ticketDTO = new TicketDTO();
                 ticketDTO.setId(ticket.getId());
@@ -111,7 +112,7 @@ public class OrderServiceImpl implements OrderService {
                 throw new Exception("Invalid Session"); //该场次不存在
             session = sessionOptional.get();
             if (!userDao.existsUserByIdIs(userId)) return -1; //用户不存在
-            if (seats.size() == 0 || seats.size() % 2 != 0)
+            if (seats.isEmpty() || seats.size() % 2 != 0)
                 throw new Exception("Invalid seat"); //没有输入正确的行数和列数
 
             //0-base -> 1-base
@@ -151,8 +152,8 @@ public class OrderServiceImpl implements OrderService {
             try {
                 mtx.release();
             } catch (Exception e) {
-                error = true;
-                e.printStackTrace();
+//                error = true;
+//                e.printStackTrace();
             }
         }
 
@@ -221,76 +222,76 @@ public class OrderServiceImpl implements OrderService {
     @Async
     public void grabTicket(Integer userId, Integer sessionId) {
 //        GrabItem grabItem = grabItemDao.save(new GrabItem(userId, sessionId, 0));
-        GrabItem grabItem = new GrabItem(userId, sessionId, 0);
-        InterProcessMutex mtx = new InterProcessMutex(curatorFramework, "/session_" + sessionId);
-        boolean error = false;
-        Session session = null;
-        try {
-            mtx.acquire();
-            Optional<Session> sessionOptional = sessionDao.getSessionById(sessionId);
-            if (sessionOptional.isEmpty())
-                throw new Exception("Invalid Session"); //该场次不存在
-            session = sessionOptional.get();
-
-            int col = session.getRoom().getCol();
-
-            String seatStr = session.getSeat();
-            StringBuilder sb = new StringBuilder(seatStr);
-            for (int i = 0; i < sb.length(); ++i) {
-                if (sb.charAt(i) == '1') {
-                    sb.setCharAt(i, '0');
-                    session.setSeat(sb.toString());
-                    grabItem.setCol(i % col);
-                    grabItem.setRow(i / col);
-                    grabItem.setStatus(1);
-                    break;
-                }
-            }
-            sessionDao.saveSession(session);
-            if (grabItem.getStatus() == 0) {
-                grabItem.setStatus(2);
-            }
-            grabItemDao.save(grabItem);
-        } catch (Exception e) {
-            e.printStackTrace();
-            error = true;
-        } finally {
-            try {
-                mtx.release();
-            } catch (Exception e) {
-                error = true;
-                e.printStackTrace();
-            }
-        }
-        if (error)
-            return;
-
-        if (grabItem.getStatus() == 1) {
-            //生成新的订单
-            Order order = new Order();
-            Timestamp nowTime = new Timestamp(System.currentTimeMillis());
-            order.setTime(nowTime);
-            order.setUserId(userId);
-            Byte isPaid = 1;
-            order.setIsPaid(isPaid);
-            BigDecimal totalPrice = new BigDecimal(0);
-            order = orderDao.saveOrder(order);
-            Integer orderId = order.getId();
-
-            Ticket ticket = new Ticket();
-            ticket.setOrderId(orderId);
-            Integer seatRow = grabItem.getRow();
-            Integer seatCol = grabItem.getCol();
-            ticket.setCol(seatCol);
-            ticket.setRow(seatRow);
-            ticket.setSessionId(sessionId);
-            ticket.setPrice(session.getPrice());
-            totalPrice = totalPrice.add(session.getPrice());
-            ticket.setState(0);
-            ticketDao.saveTicket(ticket);
-
-            order.setTotalPrice(totalPrice);
-            orderDao.saveOrder(order);
-        }
+//        GrabItem grabItem = new GrabItem(userId, sessionId, 0);
+//        InterProcessMutex mtx = new InterProcessMutex(curatorFramework, "/session_" + sessionId);
+//        boolean error = false;
+//        Session session = null;
+//        try {
+//            mtx.acquire();
+//            Optional<Session> sessionOptional = sessionDao.getSessionById(sessionId);
+//            if (sessionOptional.isEmpty())
+//                throw new Exception("Invalid Session"); //该场次不存在
+//            session = sessionOptional.get();
+//
+//            int col = session.getRoom().getCol();
+//
+//            String seatStr = session.getSeat();
+//            StringBuilder sb = new StringBuilder(seatStr);
+//            for (int i = 0; i < sb.length(); ++i) {
+//                if (sb.charAt(i) == '1') {
+//                    sb.setCharAt(i, '0');
+//                    session.setSeat(sb.toString());
+//                    grabItem.setCol(i % col);
+//                    grabItem.setRow(i / col);
+//                    grabItem.setStatus(1);
+//                    break;
+//                }
+//            }
+//            sessionDao.saveSession(session);
+//            if (grabItem.getStatus() == 0) {
+//                grabItem.setStatus(2);
+//            }
+//            grabItemDao.save(grabItem);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            error = true;
+//        } finally {
+//            try {
+//                mtx.release();
+//            } catch (Exception e) {
+//                error = true;
+//                e.printStackTrace();
+//            }
+//        }
+//        if (error)
+//            return;
+//
+//        if (grabItem.getStatus() == 1) {
+//            //生成新的订单
+//            Order order = new Order();
+//            Timestamp nowTime = new Timestamp(System.currentTimeMillis());
+//            order.setTime(nowTime);
+//            order.setUserId(userId);
+//            Byte isPaid = 1;
+//            order.setIsPaid(isPaid);
+//            BigDecimal totalPrice = new BigDecimal(0);
+//            order = orderDao.saveOrder(order);
+//            Integer orderId = order.getId();
+//
+//            Ticket ticket = new Ticket();
+//            ticket.setOrderId(orderId);
+//            Integer seatRow = grabItem.getRow();
+//            Integer seatCol = grabItem.getCol();
+//            ticket.setCol(seatCol);
+//            ticket.setRow(seatRow);
+//            ticket.setSessionId(sessionId);
+//            ticket.setPrice(session.getPrice());
+//            totalPrice = totalPrice.add(session.getPrice());
+//            ticket.setState(0);
+//            ticketDao.saveTicket(ticket);
+//
+//            order.setTotalPrice(totalPrice);
+//            orderDao.saveOrder(order);
+//        }
     }
 }

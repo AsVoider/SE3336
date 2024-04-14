@@ -57,7 +57,7 @@ class CinemaServiceImplTest {
     }
 
     @Test
-    @DisplayName("get all the cinemas")
+    @DisplayName("Get All Cinemas")
     void getAllCinemas() {
         List<Cinema> cinemas = cinemaService.getAllCinemas();
         Assertions.assertNotNull(cinemas);
@@ -67,7 +67,7 @@ class CinemaServiceImplTest {
     }
 
     @Test
-    @DisplayName("get cinema by movie id")
+    @DisplayName("Get Cinema By Movie Id")
     void getCinemasByMovieId() {
         //movieid存在
         Integer movieId = 1;

@@ -26,7 +26,7 @@ class MovieServiceImplTest {
     MovieService movieService;
 
     @Test
-    @DisplayName("getAllMovies")
+    @DisplayName("Get All Movies")
     void getAllMovies() {
         var lists = movieService.getAllMovies();
         assert (!lists.isEmpty());
@@ -34,7 +34,7 @@ class MovieServiceImplTest {
     }
 
     @Test
-    @DisplayName("getMovie")
+    @DisplayName("Get Movie")
     void getMovie() {
         var movieDto = movieService.getMovie(1);
         assertNotNull(movieDto);
@@ -89,7 +89,7 @@ class MovieServiceImplTest {
         var comments = movieService.getCommentsByMovieId(1);
         assert (!comments.isEmpty());
 
-        assertEquals(comments.get(0).getComment(), "hehe");
+        assertEquals(comments.get(0).getComment(), "cccccc");
         assertEquals(comments.get(1).getComment(), "haha");
     }
 

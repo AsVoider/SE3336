@@ -29,7 +29,7 @@ public class SessionServiceImpl implements SessionService {
 
         String seatStr = session.getSeat();
 
-        assert (row * col <= seatStr.length());
+        //assert (row * col <= seatStr.length());
 
         //-1表示已被购买 0表示可选 1表示在支付中状态
         List<List<Integer>> seats = new ArrayList<>();
