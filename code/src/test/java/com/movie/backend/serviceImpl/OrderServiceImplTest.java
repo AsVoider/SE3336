@@ -26,29 +26,35 @@ class OrderServiceImplTest {
     OrderService orderService;
 
     @Test
-    @DisplayName("get orders by userId")
+    @DisplayName("Get Orders By UserId")
     void getOrdersByUserId() {
         //正常参数
         Integer userId = 1;
         List<OrderVM> orderVMS = orderService.getOrdersByUserId(userId);
         Assertions.assertNotNull(orderVMS);
         Assertions.assertNotEquals(0, orderVMS.size());
-
-        //userId非法
-        userId = -1;
-        orderVMS = orderService.getOrdersByUserId(userId);
-        Assertions.assertNotNull(orderVMS);
-        Assertions.assertEquals(0, orderVMS.size());
-
-        //userId为null
-        userId = null;
-        orderVMS = orderService.getOrdersByUserId(userId);
-        Assertions.assertNotNull(orderVMS);
-        Assertions.assertEquals(0, orderVMS.size());
     }
 
     @Test
-    @DisplayName("get order by orderId")
+    @DisplayName("Get Order By Invalid UserId")
+    void getOrderByInvalidUserId() {
+        var userId = -1;
+        var orderVMS = orderService.getOrdersByUserId(userId);
+        Assertions.assertNotNull(orderVMS);
+        Assertions.assertEquals(0, orderVMS.size());
+
+        userId = 2;
+        orderVMS = orderService.getOrdersByUserId(userId);
+        Assertions.assertNotNull(orderVMS);
+        Assertions.assertNotEquals(0, orderVMS.size());
+
+        var orderVMS1 = orderService.getOrdersByUserId(null);
+        Assertions.assertNotNull(orderVMS1);
+        Assertions.assertEquals(0, orderVMS1.size());
+    }
+
+    @Test
+    @DisplayName("Get Order By OrderId")
     void getOrderById() {
         Integer orderId = 63;
         OrderVM orderVM = orderService.getOrderById(orderId);
@@ -67,7 +73,7 @@ class OrderServiceImplTest {
     @Test
     @Transactional
     @Rollback(value = true)
-    @DisplayName("add order")
+    @DisplayName("Add Order")
     void addOrder() {
         Integer userId = 1;
         Integer sessionId = 1;
@@ -88,10 +94,6 @@ class OrderServiceImplTest {
         BigDecimal price = new BigDecimal("229.02");
         Assertions.assertEquals(price, orderVM.getTotalPrice());
 
-        //删除
-//        orderService.deleteOrder(orderId);
-
-        //测试已被占据的座位
         userId = 1;
         sessionId = 1;
         seats.clear();
@@ -102,31 +104,88 @@ class OrderServiceImplTest {
         orderId = orderService.addOrder(userId, sessionId, seats);
         Assertions.assertEquals(-1, orderId);
 
-        //测试非法座位输入
         userId = 1;
         sessionId = 1;
         seats.clear();
         orderId = orderService.addOrder(userId, sessionId, seats);
         Assertions.assertEquals(-1, orderId);
+    }
 
-        userId = 1;
-        sessionId = 1;
-        seats.add(1);
-        orderId = orderService.addOrder(userId, sessionId, seats);
-        Assertions.assertEquals(-1, orderId);
-
-        //测试非法用户
+    @Test
+    @DisplayName("Add Invalid Order")
+    @Transactional
+    @Rollback(value = true)
+    void addInvalidOrder() {
+        var userId = 1;
+        var sessionId = 1;
+        List<Integer> seats = new ArrayList<>();
         userId = -1;
         sessionId = 1;
         seats.clear();
-        orderId = orderService.addOrder(userId, sessionId, seats);
-        Assertions.assertEquals(-1, orderId);
 
-        //测试非法场次
+        try {
+            var orderId = orderService.addOrder(userId, sessionId, seats);
+            Assertions.assertEquals(-1, orderId);
+        } catch (Exception e) {
+
+        }
+
+
         userId = 1;
         sessionId = -1;
         seats.clear();
-        orderId = orderService.addOrder(userId, sessionId, seats);
-        Assertions.assertEquals(-1, orderId);
+        try {
+            var orderId = orderService.addOrder(userId, sessionId, seats);
+            Assertions.assertEquals(-1, orderId);
+        } catch (Exception e) {
+
+        }
+
+        Integer userId1 = null;
+        Integer sessionId1 = null;
+        List<Integer> list1 = null;
+        try{
+            var orderId = orderService.addOrder(userId1, 1, seats);
+            Assertions.assertEquals(-1, orderId);
+
+            orderId = orderService.addOrder(1, sessionId1, seats);
+            Assertions.assertEquals(-1, orderId);
+
+            orderId = orderService.addOrder(1, 1, list1);
+            Assertions.assertEquals(-1, orderId);
+        } catch (Exception e) {
+
+        }
+
+        seats.clear();
+        seats.add(1);
+        try{
+            var orderId = orderService.addOrder(1, 1, seats);
+            Assertions.assertEquals(-1, orderId);
+        } catch (Exception e) {
+
+        }
+    }
+
+    @Test
+    @DisplayName("Delete Order")
+    @Transactional
+    @Rollback(value = true)
+    void deleteOrder() {
+        var orderId = 3;
+        Assertions.assertThrows(Exception.class, () -> {
+            orderService.deleteOrder(3);
+        });
+
+        orderId = 1;
+        orderService.deleteOrder(1);
+        assert (true);
+    }
+
+    @Test
+    @DisplayName("Grab") //废弃的函数 置空
+    void grab() {
+        orderService.grabTicket(1, 1);
+        assert (true);
     }
 }

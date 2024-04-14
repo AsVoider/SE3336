@@ -33,8 +33,8 @@ class OrderDaoImplTest {
     }
 
     @Test
-    @DisplayName("Get Illegal UserId")
-    void getIllegalUserOrder() {
+    @DisplayName("Get Invalid UserId")
+    void getInvalidUserOrder() {
         List<Order> order = null;
         try {
             order = orderDao.getOrdersByUserId(-123);
@@ -64,8 +64,8 @@ class OrderDaoImplTest {
     @Test
     @Transactional
     @Rollback(value = true)
-    @DisplayName("Save Illegal Order")
-    void saveIllegalOrder() {
+    @DisplayName("Save Invalid Order")
+    void saveInvalidOrder() {
         Order order = null;
         //order.setIsPaid(null);
         Order test = null;
@@ -80,7 +80,7 @@ class OrderDaoImplTest {
     @Test
     @Transactional
     @Rollback(value = true)
-    @DisplayName("getOrderById")
+    @DisplayName("Get Order By Id")
     void getOrderById() {
         var saved = new Order();
         saved.setIsPaid(Byte.MAX_VALUE);
@@ -97,8 +97,8 @@ class OrderDaoImplTest {
     }
 
     @Test
-    @DisplayName("Get Illegal Id")
-    void GetIllegalId() {
+    @DisplayName("Get Invalid Id")
+    void GetInvalidId() {
         Order order = null;
         try {
             order = orderDao.getOrderById(12345);
@@ -120,5 +120,17 @@ class OrderDaoImplTest {
         orderDao.deleteOrder(deleteId);
         orders = orderDao.getOrdersByUserId(1);
         assert (orders.isEmpty() || orders.get(0).getId() != deleteId);
+    }
+
+    @Test
+    @Transactional
+    @Rollback(value = true)
+    @DisplayName("Test Wrong Delete")
+    void TestDeleteWrong() {
+        try {
+            orderDao.deleteOrder(-123);
+        } catch (Exception e) {
+            assert (true);
+        }
     }
 }

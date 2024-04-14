@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,9 +24,8 @@ class SessionDaoImplTest {
     SessionDao sessionDao;
 
     @Test
-    @DisplayName("get session and movie")
+    @DisplayName("Get Session And Movie")
     void getSessionByMovieAndRoom() {
-        //检查合法的数据
         Integer movieId = 1;
         Integer roomId = 2;
         List<Session> sessions = sessionDao.getSessionByMovieAndRoom(movieId, roomId);
@@ -39,11 +39,14 @@ class SessionDaoImplTest {
             Assertions.assertEquals(sessions.get(0).getRoomId(), sessions.get(1).getRoomId());
             Assertions.assertEquals(sessions.get(0).getMovieId(), sessions.get(1).getMovieId());
         }
+    }
 
-        //检查非法的数据
-        movieId = -1;
-        roomId = 2;
-        sessions = sessionDao.getSessionByMovieAndRoom(movieId, roomId);
+    @Test
+    @DisplayName("Get Invalid Session And Movie")
+    void GetInvalidSessionAndMovie() {
+        var movieId = -1;
+        var roomId = 2;
+        var sessions = sessionDao.getSessionByMovieAndRoom(movieId, roomId);
         Assertions.assertEquals(sessions.size(), 0);
 
         movieId = 1;
@@ -53,9 +56,8 @@ class SessionDaoImplTest {
     }
 
     @Test
-    @DisplayName("get session by movie")
+    @DisplayName("Get Session By Movie")
     void getSessionsByMovie() {
-        //检查合法数据
         Integer movieId = 1;
         List<Session> sessions = sessionDao.getSessionsByMovie(movieId);
         Assertions.assertNotNull(sessions);
@@ -65,41 +67,69 @@ class SessionDaoImplTest {
         if (sessions.size() > 1) {
             Assertions.assertEquals(sessions.get(0).getMovieId(), sessions.get(1).getMovieId());
         }
+    }
 
-        //检查非法数据
-        movieId = -1;
-        sessions = sessionDao.getSessionsByMovie(movieId);
+    @Test
+    @DisplayName("Get Invalid Session By Movie")
+    void getInvalidSessionByMovie() {
+        var movieId = -1;
+        var sessions = sessionDao.getSessionsByMovie(movieId);
         Assertions.assertNotNull(sessions);
         Assertions.assertEquals(0, sessions.size());
     }
 
     @Test
-    @DisplayName("get session by id")
+    @DisplayName("Get Session By Id")
     void getSessionById() {
         Integer sessionId = 1;
         Optional<Session> session = sessionDao.getSessionById(sessionId);
-        Assertions.assertEquals(true, session.isPresent());
+        assertTrue(session.isPresent());
         Session session1 = session.get();
         Assertions.assertEquals(sessionId, session1.getId());
+    }
 
-        //检查非法数据
-        sessionId = -1;
-        session = sessionDao.getSessionById(sessionId);
-        Assertions.assertEquals(true, session.isEmpty());
+    @Test
+    @DisplayName("Get Session By Invalid Id")
+    void getSessionByInvalidId() {
+        var sessionId = -1;
+        var session = sessionDao.getSessionById(sessionId);
+        assertTrue(session.isEmpty());
+
+        // Given
+        Integer nullSessionId = null;
+
+        // Then
+        assertThrows(Exception.class, () -> {
+            sessionDao.getSessionById(nullSessionId);
+        });
+
+        //assert (nullsession.isEmpty());
     }
 
     @Test
     @Transactional
     @Rollback(value = true)
-    @DisplayName("save session")
+    @DisplayName("Save Session")
     void saveSession() {
         Session session = new Session();
-        String seat = "illegal seat";
+        String seat = "legal seat";
         session.setSeat(seat);
         session.setRoomId(1);
         session.setMovieId(1);
         Session session1 = sessionDao.saveSession(session);
         Assertions.assertNotEquals(0, session1.getId());
         Assertions.assertEquals(seat, session1.getSeat());
+    }
+
+    @Test
+    @Transactional
+    @Rollback(value = true)
+    @DisplayName("Save Invalid Session")
+    void saveInvalidSession() {
+        Session session = new Session();
+        assertThrows(DataIntegrityViolationException.class, () -> {
+            sessionDao.saveSession(session);
+        });
+        //assertNull(savedSession);
     }
 }
