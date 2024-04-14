@@ -50,7 +50,7 @@ class OrderServiceImplTest {
     @Test
     @DisplayName("get order by orderId")
     void getOrderById() {
-        Integer orderId = 1;
+        Integer orderId = 63;
         OrderVM orderVM = orderService.getOrderById(orderId);
         Assertions.assertNotNull(orderVM);
         Assertions.assertEquals(orderId, orderVM.getId());
@@ -85,8 +85,11 @@ class OrderServiceImplTest {
         OrderVM orderVM = orderService.getOrderById(orderId);
 
         Assertions.assertNotNull(orderVM);
-        BigDecimal price = new BigDecimal("79.00");
+        BigDecimal price = new BigDecimal("229.02");
         Assertions.assertEquals(price, orderVM.getTotalPrice());
+
+        //删除
+//        orderService.deleteOrder(orderId);
 
         //测试已被占据的座位
         userId = 1;

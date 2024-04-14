@@ -50,4 +50,17 @@ class SessionServiceImplTest {
         Assertions.assertNotNull(sessions);
         Assertions.assertEquals(0, sessions.size());
     }
+
+    @Test
+    @DisplayName("get session by id")
+    void getSessionById() {
+        //合法sessionId
+        Session session = sessionService.getSessionById(1);
+        Assertions.assertNotNull(session);
+        Assertions.assertEquals(1, session.getMovieId());
+
+        //不合法sessionId
+        Session session1 = sessionService.getSessionById(11);
+        Assertions.assertNull(session1);
+    }
 }
