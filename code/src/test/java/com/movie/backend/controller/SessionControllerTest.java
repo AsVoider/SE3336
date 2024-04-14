@@ -107,8 +107,8 @@ class SessionControllerTest {
         Session session = restTemplate.getForObject(url, Session.class);
         Assertions.assertNotNull(session);
         // influ3nza notes that this needs modification.
-        // BigDecimal b = 114.51;
-        // Assertions.assertEquals(b, session.getPrice());
+         BigDecimal b = BigDecimal.valueOf(114.51);
+         Assertions.assertEquals(b, session.getPrice());
 
         url = "http://localhost:" + port + "/updateSession";
         Map<String, String> params1 = new HashMap<>();

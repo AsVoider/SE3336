@@ -16,13 +16,13 @@ public class UserController {
     UserService userService;
     @RequestMapping("/register")
     Boolean register(@RequestBody Map<String, String> params) {
-        String userName = params.get(Constant.USER_NAME);
-        String name = params.get(Constant.NAME);
-        String password = params.get(Constant.PASSWORD);
-        String email = params.get(Constant.EMAIL);
-        String phone = params.get(Constant.PHONE);
-        String genderStr = params.get(Constant.GENDER);
-        Integer gender = Integer.parseInt(genderStr);
+//        String userName = params.get(Constant.USER_NAME);
+//        String name = params.get(Constant.NAME);
+//        String password = params.get(Constant.PASSWORD);
+//        String email = params.get(Constant.EMAIL);
+//        String phone = params.get(Constant.PHONE);
+//        String genderStr = params.get(Constant.GENDER);
+//        Integer gender = Integer.parseInt(genderStr);
         //userService.register(userName, password, gender);
         userService.register(params);
         return true;
