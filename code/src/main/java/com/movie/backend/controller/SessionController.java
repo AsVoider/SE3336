@@ -37,6 +37,6 @@ public class SessionController {
     }
     @RequestMapping("/getAllSessions")
     public List<Session> getAllSessions() {
-        return  sessionRepository.findAll();
+        return sessionRepository.findAll();
     }
 }

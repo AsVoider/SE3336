@@ -35,15 +35,23 @@ class OrderControllerTest {
     @Test
     @DisplayName("get orders by userId")
     void getOrdersByUserId() {
+        //合法用户Id
         Integer userId = 1;
-        String url = "http://localhost:" + port + "/getOrders?uid=" + userId;
+        String url = "http://localhost:" + port + "/getOrders/" + userId;
         List<OrderVM> orderVMS = restTemplate.getForObject(url, List.class);
         Assertions.assertNotNull(orderVMS);
         Assertions.assertEquals(true, orderVMS.size() > 0);
 
-        //用户id错误
+        //非法用户Id
         userId = -1;
-        url = "http://localhost:" + port + "/getOrders?uid=" + userId;
+        url = "http://localhost:" + port + "/getOrders/" + userId;
+        orderVMS = restTemplate.getForObject(url, List.class);
+        Assertions.assertNotNull(orderVMS);
+        Assertions.assertEquals(0, orderVMS.size());
+
+        //合法用户Id，但是用户不存在
+        userId = 100;
+        url = "http://localhost:" + port + "/getOrders/" + userId;
         orderVMS = restTemplate.getForObject(url, List.class);
         Assertions.assertNotNull(orderVMS);
         Assertions.assertEquals(0, orderVMS.size());
@@ -52,14 +60,22 @@ class OrderControllerTest {
     @Test
     @DisplayName("get order by orderId")
     void getOrderById() {
-        Integer orderId = 15;
-        String url = "http://localhost:" + port + "/getOrder?id=" + orderId;
+        //合法OrderId
+        Integer orderId = 63;
+        String url = "http://localhost:" + port + "/getOrder/" + orderId;
         OrderVM orderVM = restTemplate.getForObject(url, OrderVM.class);
         Assertions.assertNotNull(orderVM);
         Assertions.assertEquals(orderId, orderVM.getId());
 
+        //非法OrderId
         orderId = -1;
-        url = "http://localhost:" + port + "/getOrder?id=" + orderId;
+        url = "http://localhost:" + port + "/getOrder/" + orderId;
+        orderVM = restTemplate.getForObject(url, OrderVM.class);
+        Assertions.assertNull(orderVM);
+
+        //合法OrderId，但是Order不存在
+        orderId = 1;
+        url = "http://localhost:" + port + "/getOrder/" + orderId;
         orderVM = restTemplate.getForObject(url, OrderVM.class);
         Assertions.assertNull(orderVM);
     }
@@ -77,9 +93,10 @@ class OrderControllerTest {
         seats.add(1);
         seats.add(2);
         seatsDTO.setSeats(seats);
+
         //不会触发rollback
-//        Integer orderId = restTemplate.postForObject(url, seatsDTO, Integer.class);
-//        Assertions.assertEquals(true, orderId > 0);
+        Integer orderId = restTemplate.postForObject(url, seatsDTO, Integer.class);
+        Assertions.assertEquals(true, orderId > 0);
 
         //座位被占
         seats.clear();
@@ -103,5 +120,15 @@ class OrderControllerTest {
         seatsDTO.setSessionId(null);
         Integer orderId3 = restTemplate.postForObject(url, seatsDTO, Integer.class);
         Assertions.assertEquals(true, orderId3 < 0);
+
+        //删除order
+        url = "http://localhost:" + port + "/deleteOrder/" + orderId;
+        restTemplate.delete(url);
+
+        url = "http://localhost:" + port + "/getOrder/" + orderId;
+        OrderVM orderVM = restTemplate.getForObject(url, OrderVM.class);
+        Assertions.assertNull(orderVM);
     }
+
+
 }

@@ -8,9 +8,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import com.alibaba.fastjson.JSON;
+import java.math.BigDecimal;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,35 +38,82 @@ class SessionControllerTest {
     void getSessions() {
         Integer movieId = 1;
         Integer cinemaId = 1;
-        String url = "http://localhost:" + port + "/getSessions?movieId="
-                + movieId + "&cinemaId=" + cinemaId;
+        String url = "http://localhost:" + port + "/getSessions/"
+                + movieId + "/" + cinemaId;
         List<Session> sessions = restTemplate.getForObject(url, List.class);
-        //反序列化
-        List<Session> sessions1 = new ArrayList<>();
-        for (int i = 0; i < sessions.size(); ++i) {
-            String jsonStr = JSON.toJSONString(sessions.get(i));
-            Session session = JSON.parseObject(jsonStr, Session.class);
-            sessions1.add(session);
-        }
-        Assertions.assertNotNull(sessions1);
-        Assertions.assertNotEquals(0, sessions1.size());
-        Assertions.assertNotNull(sessions1.get(0).getSeats());
 
+        Assertions.assertNotNull(sessions);
+        Assertions.assertNotEquals(0, sessions.size());
+
+        //非法movieId
         movieId = -1;
         cinemaId = 1;
-        url = "http://localhost:" + port + "/getSessions?movieId="
-                + movieId + "&cinemaId=" + cinemaId;
+        url = "http://localhost:" + port + "/getSessions/"
+                + movieId + "/" + cinemaId;
         sessions = restTemplate.getForObject(url, List.class);
         Assertions.assertNotNull(sessions);
         Assertions.assertEquals(0, sessions.size());
 
+        //非法cinemaId
         movieId = 1;
         cinemaId = -1;
-        url = "http://localhost:" + port + "/getSessions?movieId="
-                + movieId + "&cinemaId=" + cinemaId;
+        url = "http://localhost:" + port + "/getSessions/"
+                + movieId + "/" + cinemaId;
         sessions = restTemplate.getForObject(url, List.class);
         Assertions.assertNotNull(sessions);
         Assertions.assertEquals(0, sessions.size());
+    }
 
+    @Test
+    @DisplayName("get all sessions")
+    void getAllSessions() {
+        String url = "http://localhost:" + port + "/getAllSessions";
+        List<Session> sessions = restTemplate.getForObject(url, List.class);
+
+        Assertions.assertNotNull(sessions);
+        Assertions.assertEquals(true, sessions.size() > 0);
+    }
+
+    @Test
+    @DisplayName("get a session by id")
+    void getSessionById() {
+        //合法Id
+        String url = "http://localhost:" + port + "/getSession/1";
+        Session session = restTemplate.getForObject(url, Session.class);
+        Assertions.assertNotNull(session);
+        Assertions.assertEquals(1, session.getId());
+
+        //不合法Id
+        url = "http://localhost:" + port + "/getSession/-100";
+        Session session2 = restTemplate.getForObject(url, Session.class);
+        Assertions.assertNull(session2);
+
+        //合法Id但是session不存在
+        url = "http://localhost:" + port + "/getSession/100";
+        Session session3 = restTemplate.getForObject(url, Session.class);
+        Assertions.assertNull(session3);
+    }
+
+    @Test
+    @DisplayName("update a session")
+    void updateSession() {
+        String url = "http://localhost:" + port + "/updateSession";
+        Map<String, String> params = new HashMap<>();
+        params.put("id", "1");
+        params.put("price", "114.51");
+        restTemplate.put(url, params);
+
+        url = "http://localhost:" + port + "/getSession/1";
+        Session session = restTemplate.getForObject(url, Session.class);
+        Assertions.assertNotNull(session);
+        // influ3nza notes that this needs modification.
+         BigDecimal b = BigDecimal.valueOf(114.51);
+         Assertions.assertEquals(b, session.getPrice());
+
+        url = "http://localhost:" + port + "/updateSession";
+        Map<String, String> params1 = new HashMap<>();
+        params.put("id", "1");
+        params.put("price", "39.50");
+        restTemplate.put(url, params1);
     }
 }

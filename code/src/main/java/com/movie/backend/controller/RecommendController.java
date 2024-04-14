@@ -22,7 +22,7 @@ public class RecommendController {
     @Autowired
     MovieService movieService;
 
-    @GetMapping("/rate")
+    @PostMapping("/getRate")
     ResponseEntity<?> getRate(@RequestParam Integer userId, @RequestParam Integer movieId) {
         return ResponseEntity.ok(Map.of("rate", recommendService.getRate(userId, movieId)));
     }

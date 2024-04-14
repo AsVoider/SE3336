@@ -27,7 +27,8 @@ public class MovieController {
     MovieDTO getMovie(@PathVariable Integer id) {
         //System.out.println(id);
         MovieDTO movieDTO = movieService.getMovie(id);
-        System.out.println(movieDTO.getTime());
+        //influ3nza注：这一行没考虑到null的问题。
+        //System.out.println(movieDTO.getTime());
         return movieDTO;
     }
 
