@@ -24,7 +24,7 @@ class CinemaDaoImpTest {
     }
 
     @Test
-    @DisplayName(value = "GetAll Test")
+    @DisplayName(value = "Get All Test")
     void getAllTest() {
         var allCinema = cinemaDao.getAllCinemas();
         for (int i = 0; i < allCinema.size(); i++) {
@@ -38,7 +38,7 @@ class CinemaDaoImpTest {
     }
 
     @Test
-    @DisplayName(value = "Get Legal Cinema Test")
+    @DisplayName(value = "Get Cinema Test")
     void getCinemaTest() {
         var nomarlCinema = cinemaDao.getCinemaById(1);
         var allCinema = cinemaDao.getAllCinemas();
@@ -51,8 +51,8 @@ class CinemaDaoImpTest {
     }
 
     @Test
-    @DisplayName(value = "Get Illegal Cinema Test")
-    void getCinemaBadTest() {
+    @DisplayName(value = "Get Invalid Cinema Test")
+    void getCinemaInvalidTest() {
         var badCinema = cinemaDao.getCinemaById(-123);
         assert (badCinema == null);
     }
@@ -80,8 +80,8 @@ class CinemaDaoImpTest {
     }
 
     @Test
-    @DisplayName("Save Illegal Test")
-    void saveIllegalTest() {
+    @DisplayName("Save Invalid Test")
+    void saveInvalidTest() {
         var cinema = cinemaDao.getCinemaById(4);
         Assertions.assertNotNull(cinema);
         cinema.setSrc(null);

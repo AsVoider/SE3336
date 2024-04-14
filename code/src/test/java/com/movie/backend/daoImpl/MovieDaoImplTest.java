@@ -70,9 +70,9 @@ class MovieDaoImplTest {
     }
 
     @Test
-    @DisplayName("Save Illegal Movie")
+    @DisplayName("Save Invalid Movie")
     @Transactional
-    void saveIllegalTest() {
+    void saveInvalidTest() {
         var mv = new Movie();
         Movie saved = null;
         try {

@@ -35,8 +35,8 @@ class TicketDaoImplTest {
     @Test
     @Transactional
     @Rollback(value = true)
-    @DisplayName("Save Illegal Tickets")
-    void saveIllegalTickets() {
+    @DisplayName("Save Invalid Tickets")
+    void saveInvalidTickets() {
         Ticket ticket = null;
         assertThrows(InvalidDataAccessApiUsageException.class, () -> {
             ticketDao.saveTicket(ticket);

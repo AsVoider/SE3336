@@ -9,6 +9,4 @@ public interface SessionService {
     List<Session> getSessionsByMovieAndCinema(Integer movieId, Integer cinemaId);
     Session getSessionById(Integer sessionId);
     void updateSession(Map<String, String> params);
-
-
 }

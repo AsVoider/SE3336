@@ -42,8 +42,8 @@ class SessionDaoImplTest {
     }
 
     @Test
-    @DisplayName("Get Illegal Session And Movie")
-    void GetIllegalSessionAndMovie() {
+    @DisplayName("Get Invalid Session And Movie")
+    void GetInvalidSessionAndMovie() {
         var movieId = -1;
         var roomId = 2;
         var sessions = sessionDao.getSessionByMovieAndRoom(movieId, roomId);
@@ -70,8 +70,8 @@ class SessionDaoImplTest {
     }
 
     @Test
-    @DisplayName("Get Illegal Session By Movie")
-    void getIllegalSessionByMovie() {
+    @DisplayName("Get Invalid Session By Movie")
+    void getInvalidSessionByMovie() {
         var movieId = -1;
         var sessions = sessionDao.getSessionsByMovie(movieId);
         Assertions.assertNotNull(sessions);
@@ -89,8 +89,8 @@ class SessionDaoImplTest {
     }
 
     @Test
-    @DisplayName("Get Session By Illegal Id")
-    void getSessionByIllegalId() {
+    @DisplayName("Get Session By Invalid Id")
+    void getSessionByInvalidId() {
         var sessionId = -1;
         var session = sessionDao.getSessionById(sessionId);
         assertTrue(session.isEmpty());
@@ -124,8 +124,8 @@ class SessionDaoImplTest {
     @Test
     @Transactional
     @Rollback(value = true)
-    @DisplayName("Save Illegal Session")
-    void saveIllegalSession() {
+    @DisplayName("Save Invalid Session")
+    void saveInvalidSession() {
         Session session = new Session();
         assertThrows(DataIntegrityViolationException.class, () -> {
             sessionDao.saveSession(session);

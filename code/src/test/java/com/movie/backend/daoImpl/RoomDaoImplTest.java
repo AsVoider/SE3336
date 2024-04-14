@@ -20,7 +20,7 @@ class RoomDaoImplTest {
     RoomDao roomDao;
 
     @Test
-    @DisplayName("get room by cinema id and check")
+    @DisplayName("Get Room By Binema Id And Check")
     void getRoomsByCinemaId() {
         Integer id = 1;
         List<Room> rooms = roomDao.getRoomsByCinemaId(id);
@@ -34,8 +34,8 @@ class RoomDaoImplTest {
     }
 
     @Test
-    @DisplayName("Get Illegal Id Room")
-    void GetIllegalIdRoom() {
+    @DisplayName("Get Invalid Id Room")
+    void GetInvalidIdRoom() {
         Integer cinemaId = 999; // Assuming this cinema ID does not exist
 
         // When
@@ -70,8 +70,8 @@ class RoomDaoImplTest {
     }
 
     @Test
-    @DisplayName("Get Room By Illegal Id")
-    void getRoomByIllegalId() {
+    @DisplayName("Get Room By Invalid Id")
+    void getRoomByInvalidId() {
         Integer roomId = 999; // Assuming this room ID does not exist
         // When
         var room = roomDao.getRoomByRoomId(roomId);
