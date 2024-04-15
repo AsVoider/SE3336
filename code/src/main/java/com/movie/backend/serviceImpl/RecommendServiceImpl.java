@@ -31,18 +31,18 @@ public class RecommendServiceImpl implements RecoService {
                 fw.write(userRate.getUserId() + "," + userRate.getMovieId() + "," + userRate.getRate() + "\n");
             }
         } catch (IOException e) {
-            if (file.exists())
-                file.delete();
-            e.printStackTrace();
+//            if (file.exists())
+//                file.delete();
+//            e.printStackTrace();
         }
     }
 
     @Override
     public List<Integer> getRecommendMovies(Integer userId) {
         File file = new File(System.getProperty("java.io.tmpdir"), "recommendation.out");
-        if (!file.exists()) {
-            return new ArrayList<>();
-        }
+//        if (!file.exists()) {
+//            //return new ArrayList<>();
+//        }
         List<Integer> movieIds = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
@@ -51,19 +51,19 @@ public class RecommendServiceImpl implements RecoService {
                 Integer userIdTmp = Integer.parseInt(strs[0]);
                 if (strs.length == 1)
                     continue;
-                if (userIdTmp.equals(userId)) {
-                    for (int i = 1; i < strs.length; ++i) {
-                        String str = strs[i];
-                        if (str.isEmpty())
-                            continue;
-                        movieIds.add(Integer.parseInt(strs[i]));
-                    }
-                    break;
-                }
+//                if (userIdTmp.equals(userId)) {
+//                    for (int i = 1; i < strs.length; ++i) {
+//                        String str = strs[i];
+//                        if (str.isEmpty())
+//                            continue;
+//                        movieIds.add(Integer.parseInt(strs[i]));
+//                    }
+//                    break;
+//                }
             }
             return movieIds;
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             return new ArrayList<>();
         }
     }
@@ -83,7 +83,7 @@ public class RecommendServiceImpl implements RecoService {
         try {
             RecommendationUtil.getItemBasedRecommendation(filename, RECOMMEND_NUM);
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 

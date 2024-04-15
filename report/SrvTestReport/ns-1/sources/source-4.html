@@ -1,0 +1,215 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > RecommendServiceImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.movie.backend.serviceImpl</a>
+</div>
+
+<h1>Coverage Summary for Class: RecommendServiceImpl (com.movie.backend.serviceImpl)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RecommendServiceImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    90%
+  </span>
+  <span class="absValue">
+    (9/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    93.9%
+  </span>
+  <span class="absValue">
+    (31/33)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.movie.backend.serviceImpl;
+&nbsp;
+&nbsp;import com.movie.backend.entity.UserRate;
+&nbsp;import com.movie.backend.repository.UserRateRepository;
+&nbsp;import com.movie.backend.service.RecoService;
+&nbsp;import com.movie.backend.utils.RecommendationUtil;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import java.io.*;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;public class RecommendServiceImpl implements RecoService {</b>
+&nbsp;    @Autowired
+&nbsp;    UserRateRepository userRateRepository;
+&nbsp;
+<b class="fc">&nbsp;    private final int TRIGGER = 10;</b>
+&nbsp;
+<b class="fc">&nbsp;    private final int RECOMMEND_NUM = 3;</b>
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void generateTmpFile(String filename) {
+<b class="fc">&nbsp;        List&lt;UserRate&gt; userRates = userRateRepository.findAll();</b>
+&nbsp;
+<b class="fc">&nbsp;        File file = new File(filename);</b>
+<b class="fc">&nbsp;        try (FileWriter fw = new FileWriter(file, false)) {</b>
+<b class="fc">&nbsp;            for (UserRate userRate : userRates) {</b>
+<b class="fc">&nbsp;                fw.write(userRate.getUserId() + &quot;,&quot; + userRate.getMovieId() + &quot;,&quot; + userRate.getRate() + &quot;\n&quot;);</b>
+&nbsp;            }
+<b class="fc">&nbsp;        } catch (IOException e) {</b>
+&nbsp;//            if (file.exists())
+&nbsp;//                file.delete();
+&nbsp;//            e.printStackTrace();
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;Integer&gt; getRecommendMovies(Integer userId) {
+<b class="fc">&nbsp;        File file = new File(System.getProperty(&quot;java.io.tmpdir&quot;), &quot;recommendation.out&quot;);</b>
+&nbsp;//        if (!file.exists()) {
+&nbsp;//            //return new ArrayList&lt;&gt;();
+&nbsp;//        }
+<b class="fc">&nbsp;        List&lt;Integer&gt; movieIds = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {</b>
+&nbsp;            String line;
+<b class="fc">&nbsp;            while ((line = reader.readLine()) != null) {</b>
+<b class="fc">&nbsp;                String[] strs = line.split(&quot; &quot;);</b>
+<b class="fc">&nbsp;                Integer userIdTmp = Integer.parseInt(strs[0]);</b>
+<b class="pc">&nbsp;                if (strs.length == 1)</b>
+&nbsp;                    continue;
+&nbsp;//                if (userIdTmp.equals(userId)) {
+&nbsp;//                    for (int i = 1; i &lt; strs.length; ++i) {
+&nbsp;//                        String str = strs[i];
+&nbsp;//                        if (str.isEmpty())
+&nbsp;//                            continue;
+&nbsp;//                        movieIds.add(Integer.parseInt(strs[i]));
+&nbsp;//                    }
+&nbsp;//                    break;
+&nbsp;//                }
+&nbsp;            }
+<b class="fc">&nbsp;            return movieIds;</b>
+<b class="fc">&nbsp;        } catch (Exception e) {</b>
+&nbsp;//            e.printStackTrace();
+<b class="nc">&nbsp;            return new ArrayList&lt;&gt;();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void saveUserRate(UserRate userRate) {
+<b class="fc">&nbsp;        Optional&lt;UserRate&gt; userRateOptional = userRateRepository.findByUserIdAndMovieId(userRate.getUserId(), userRate.getMovieId());</b>
+<b class="fc">&nbsp;        if (userRateOptional.isPresent()) {</b>
+<b class="fc">&nbsp;            UserRate userRateTmp = userRateOptional.get();</b>
+<b class="fc">&nbsp;            userRateTmp.setRate(userRate.getRate());</b>
+<b class="fc">&nbsp;            userRateRepository.save(userRateTmp);</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;            userRateRepository.save(userRate);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        String filename = System.getProperty(&quot;java.io.tmpdir&quot;) + &quot;/ratings.tmp&quot;;</b>
+<b class="fc">&nbsp;        generateTmpFile(filename);</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            RecommendationUtil.getItemBasedRecommendation(filename, RECOMMEND_NUM);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+&nbsp;            //e.printStackTrace();
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public double getRate(Integer userId, Integer movieId) {
+<b class="fc">&nbsp;        Optional&lt;UserRate&gt; userRate = userRateRepository.findByUserIdAndMovieId(userId, movieId);</b>
+<b class="fc">&nbsp;        if (userRate.isPresent()) {</b>
+<b class="fc">&nbsp;            return userRate.get().getRate();</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;            return 0;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-04-15 23:56</div>
+</div>
+</body>
+</html>
