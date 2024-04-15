@@ -1,0 +1,218 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > CinemaServiceImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.movie.backend.serviceImpl</a>
+</div>
+
+<h1>Coverage Summary for Class: CinemaServiceImpl (com.movie.backend.serviceImpl)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CinemaServiceImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (12/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (38/38)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.movie.backend.serviceImpl;
+&nbsp;
+&nbsp;import com.movie.backend.dao.CinemaDao;
+&nbsp;import com.movie.backend.dao.RoomDao;
+&nbsp;import com.movie.backend.dao.SessionDao;
+&nbsp;import com.movie.backend.entity.Cinema;
+&nbsp;import com.movie.backend.entity.Room;
+&nbsp;import com.movie.backend.entity.Session;
+&nbsp;import com.movie.backend.service.CinemaService;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import java.math.BigDecimal;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;public class CinemaServiceImpl implements CinemaService {</b>
+&nbsp;    @Autowired
+&nbsp;    CinemaDao cinemaDao;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    RoomDao roomDao;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    SessionDao sessionDao;
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;Cinema&gt; getAllCinemas() {
+<b class="fc">&nbsp;        return cinemaDao.getAllCinemas();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;Cinema&gt; getCinemasByMovieId(Integer movieId) {
+&nbsp;        //非法输入
+<b class="fc">&nbsp;        if (movieId == null) {</b>
+<b class="fc">&nbsp;            return new ArrayList&lt;&gt;();</b>
+&nbsp;        }
+&nbsp;        //movie -&gt; session -&gt; room -&gt; cinema 记录最小价格的过程
+&nbsp;        //通过场次查找放映厅，并记录每个放映厅的最低价格
+&nbsp;        //roomIds记录放映厅号，set保证其值唯一
+<b class="fc">&nbsp;        List&lt;Session&gt; sessions = sessionDao.getSessionsByMovie(movieId);</b>
+<b class="fc">&nbsp;        Map&lt;Integer, BigDecimal&gt; roomMinPrices = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        Set&lt;Integer&gt; roomIds = new HashSet&lt;&gt;();</b>
+<b class="fc">&nbsp;        for (Session session : sessions) {</b>
+<b class="fc">&nbsp;            Integer roomId = session.getRoomId();</b>
+<b class="fc">&nbsp;            roomIds.add(roomId);</b>
+<b class="fc">&nbsp;            if (roomMinPrices.containsKey(roomId)) {</b>
+<b class="fc">&nbsp;                BigDecimal oldMinPrice = roomMinPrices.get(roomId);</b>
+<b class="fc">&nbsp;                BigDecimal curMinPrice = session.getPrice();</b>
+&nbsp;//                if (curMinPrice.compareTo(oldMinPrice) &lt; 0) {
+&nbsp;//                    roomMinPrices.put(roomId, curMinPrice);
+&nbsp;//                }
+&nbsp;            } else {
+<b class="fc">&nbsp;                roomMinPrices.put(roomId, session.getPrice());</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+&nbsp;        //通过放映厅查找电影院
+&nbsp;        //cinemaIds记录电影院，且其值唯一；map记录最低价
+<b class="fc">&nbsp;        Map&lt;Integer, BigDecimal&gt; cinemaMinPrices = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        Set&lt;Integer&gt; cinemaIds = new HashSet&lt;&gt;();</b>
+<b class="fc">&nbsp;        for (Integer roomId : roomIds) {</b>
+<b class="fc">&nbsp;            Room room = roomDao.getRoomByRoomId(roomId);</b>
+<b class="fc">&nbsp;            Integer cinemaId = room.getCinemaId();</b>
+<b class="fc">&nbsp;            cinemaIds.add(cinemaId);</b>
+<b class="fc">&nbsp;            if (cinemaMinPrices.containsKey(cinemaId)) {</b>
+<b class="fc">&nbsp;                BigDecimal oldMinPrice = cinemaMinPrices.get(cinemaId);</b>
+<b class="fc">&nbsp;                BigDecimal curMinPrice = roomMinPrices.get(roomId);</b>
+&nbsp;//                if (curMinPrice.compareTo(oldMinPrice) &lt; 0) {
+&nbsp;//                    cinemaMinPrices.put(cinemaId, curMinPrice);
+&nbsp;//                }
+&nbsp;            } else {
+<b class="fc">&nbsp;                cinemaMinPrices.put(cinemaId, roomMinPrices.get(roomId));</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+&nbsp;        //转换成cinemas
+<b class="fc">&nbsp;        List&lt;Cinema&gt; cinemas = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        for (Integer cinemaId : cinemaIds) {</b>
+<b class="fc">&nbsp;            Cinema cinema = cinemaDao.getCinemaById(cinemaId);</b>
+<b class="fc">&nbsp;            cinema.setMinPrice(cinemaMinPrices.get(cinemaId));</b>
+<b class="fc">&nbsp;            cinemas.add(cinema);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return cinemas;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Cinema getCinemaById(Integer cinemaId) {
+<b class="fc">&nbsp;        return cinemaDao.getCinemaById(cinemaId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void updateCinema(Map&lt;String, String&gt; params) {
+<b class="fc">&nbsp;        Integer cinemaId = Integer.parseInt(params.get(&quot;id&quot;));</b>
+<b class="fc">&nbsp;        Cinema cinema = cinemaDao.getCinemaById(cinemaId);</b>
+<b class="fc">&nbsp;        String name = params.get(&quot;name&quot;);</b>
+<b class="fc">&nbsp;        cinema.setName(name);</b>
+<b class="fc">&nbsp;        String address = params.get(&quot;address&quot;);</b>
+<b class="fc">&nbsp;        cinema.setAddress(address);</b>
+<b class="fc">&nbsp;        cinemaDao.save(cinema);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-04-15 00:41</div>
+</div>
+</body>
+</html>
