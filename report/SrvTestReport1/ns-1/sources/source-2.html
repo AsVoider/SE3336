@@ -1,0 +1,239 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > MovieServiceImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.movie.backend.serviceImpl</a>
+</div>
+
+<h1>Coverage Summary for Class: MovieServiceImpl (com.movie.backend.serviceImpl)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MovieServiceImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (18/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (64/64)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.movie.backend.serviceImpl;
+&nbsp;
+&nbsp;import com.movie.backend.dao.*;
+&nbsp;import com.movie.backend.dto.CommentDTO;
+&nbsp;import com.movie.backend.dto.MovieDTO;
+&nbsp;import com.movie.backend.entity.*;
+&nbsp;import com.movie.backend.service.MovieService;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;public class MovieServiceImpl implements MovieService {</b>
+&nbsp;    @Autowired
+&nbsp;    MovieDao movieDao;
+&nbsp;    @Autowired
+&nbsp;    ActorDao actorDao;
+&nbsp;    @Autowired
+&nbsp;    DirectorDao directorDao;
+&nbsp;    @Autowired
+&nbsp;    CommentDao commentDao;
+&nbsp;    @Autowired
+&nbsp;    UserDao userDao;
+&nbsp;    private MovieDTO transMovieIntoDTO(Movie movie) {
+<b class="fc">&nbsp;        MovieDTO movieDTO = new MovieDTO();</b>
+<b class="fc">&nbsp;        if (movie == null) return null;</b>
+<b class="fc">&nbsp;        movieDTO.setId(movie.getId());</b>
+<b class="fc">&nbsp;        movieDTO.setTitle(movie.getTitle());</b>
+<b class="fc">&nbsp;        movieDTO.setTime(movie.getTime());</b>
+<b class="fc">&nbsp;        String[] directors = movie.getDirector().split(&quot; &quot;);</b>
+<b class="fc">&nbsp;        List&lt;Director&gt; directorList = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        for (String director: directors) {</b>
+<b class="fc">&nbsp;            Director director1 = directorDao.getDirectorByName(director);</b>
+<b class="fc">&nbsp;            if (director1 != null) {</b>
+<b class="fc">&nbsp;                directorList.add(director1);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        movieDTO.setDirectors(directorList);</b>
+<b class="fc">&nbsp;        String[] actors = movie.getActor().split(&quot; &quot;);</b>
+<b class="fc">&nbsp;        List&lt;Actor&gt; actorList = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        for (String actor : actors) {</b>
+<b class="fc">&nbsp;            Actor actor1 = actorDao.getActorByName(actor);</b>
+<b class="fc">&nbsp;            if (actor1 != null) {</b>
+<b class="fc">&nbsp;                actorList.add(actor1);</b>
+&nbsp;            }
+&nbsp;        }
+<b class="fc">&nbsp;        movieDTO.setActors(actorList);</b>
+<b class="fc">&nbsp;        movieDTO.setMark(movie.getMark());</b>
+<b class="fc">&nbsp;        movieDTO.parseTypes(movie);</b>
+<b class="fc">&nbsp;        movieDTO.setDuration(movie.getDuration());</b>
+<b class="fc">&nbsp;        movieDTO.setSrc(movie.getSrc());</b>
+<b class="fc">&nbsp;        movieDTO.setIntro(movie.getIntro());</b>
+<b class="fc">&nbsp;        return movieDTO;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private CommentDTO transCommentToDTO(Comment comment) {
+<b class="fc">&nbsp;        CommentDTO commentDTO = new CommentDTO();</b>
+<b class="fc">&nbsp;        commentDTO.setComment(comment.getComment());</b>
+<b class="fc">&nbsp;        commentDTO.setMovieId(comment.getMovieId());</b>
+<b class="fc">&nbsp;        commentDTO.setUserid(comment.getUserid());</b>
+<b class="fc">&nbsp;        Integer userId = comment.getUserid();</b>
+<b class="fc">&nbsp;        User user = userDao.getUserById(userId);</b>
+<b class="fc">&nbsp;        commentDTO.setUsername(user.getUsername());</b>
+<b class="fc">&nbsp;        return commentDTO;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;MovieDTO&gt; getAllMovies() {
+<b class="fc">&nbsp;        List&lt;Movie&gt; movies = movieDao.getMovies();</b>
+<b class="fc">&nbsp;        List&lt;MovieDTO&gt; movieDTOS = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        for (int i = 0; i &lt; movies.size(); ++i) {</b>
+<b class="fc">&nbsp;            MovieDTO movieDTO = transMovieIntoDTO(movies.get(i));</b>
+<b class="fc">&nbsp;            movieDTOS.add(movieDTO);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return movieDTOS;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public MovieDTO getMovie(Integer id) {
+<b class="fc">&nbsp;        if (id == null) return null;</b>
+<b class="fc">&nbsp;        Movie movie = movieDao.getMovie(id);</b>
+<b class="fc">&nbsp;        MovieDTO movieDTO = transMovieIntoDTO(movie);</b>
+<b class="fc">&nbsp;        return movieDTO;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void updateMovie(Map&lt;String, String&gt; params) {
+<b class="fc">&nbsp;        Integer movieId = Integer.parseInt(params.get(&quot;id&quot;));</b>
+<b class="fc">&nbsp;        Movie movie = movieDao.getMovie(movieId);</b>
+<b class="fc">&nbsp;        String title = params.get(&quot;title&quot;);</b>
+<b class="fc">&nbsp;        String intro = params.get(&quot;intro&quot;);</b>
+<b class="fc">&nbsp;        movie.setTitle(title);</b>
+<b class="fc">&nbsp;        movie.setIntro(intro);</b>
+<b class="fc">&nbsp;        movieDao.saveMovie(movie);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;CommentDTO&gt; getCommentsByMovieId(Integer movieId) {
+<b class="fc">&nbsp;        List&lt;Comment&gt; comments = commentDao.getCommentsByMovieId(movieId);</b>
+<b class="fc">&nbsp;        List&lt;CommentDTO&gt; commentDTOS = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        for (int i = 0; i &lt; comments.size(); ++i) {</b>
+<b class="fc">&nbsp;            CommentDTO commentDTO = transCommentToDTO(comments.get(i));</b>
+<b class="fc">&nbsp;            commentDTOS.add(commentDTO);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return commentDTOS;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void saveComment(Integer userId, Integer movieId, String com) {
+<b class="fc">&nbsp;        Comment comment = commentDao.getCommentByMovieIdAndUserId(movieId, userId);</b>
+<b class="fc">&nbsp;        if (comment == null) {</b>
+<b class="fc">&nbsp;            comment = new Comment();</b>
+<b class="fc">&nbsp;            comment.setMovieId(movieId);</b>
+<b class="fc">&nbsp;            comment.setUserid(userId);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        comment.setComment(com);</b>
+<b class="fc">&nbsp;        commentDao.save(comment);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-04-15 00:41</div>
+</div>
+</body>
+</html>
