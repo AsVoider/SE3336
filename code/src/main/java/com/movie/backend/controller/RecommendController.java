@@ -4,7 +4,7 @@ import com.movie.backend.dto.MovieDTO;
 import com.movie.backend.entity.Movie;
 import com.movie.backend.entity.UserRate;
 import com.movie.backend.service.MovieService;
-import com.movie.backend.service.RecommendService;
+import com.movie.backend.service.RecoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +17,7 @@ import java.util.Map;
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class RecommendController {
     @Autowired
-    RecommendService recommendService;
+    RecoService recommendService;
 
     @Autowired
     MovieService movieService;
