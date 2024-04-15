@@ -2,7 +2,7 @@ package com.movie.backend.serviceImpl;
 
 import com.movie.backend.entity.UserRate;
 import com.movie.backend.repository.UserRateRepository;
-import com.movie.backend.service.RecommendService;
+import com.movie.backend.service.RecoService;
 import com.movie.backend.utils.RecommendationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,10 +11,9 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Service
-public class RecommendServiceImpl implements RecommendService {
+public class RecommendServiceImpl implements RecoService {
     @Autowired
     UserRateRepository userRateRepository;
 
@@ -22,8 +21,8 @@ public class RecommendServiceImpl implements RecommendService {
 
     private final int RECOMMEND_NUM = 3;
 
-
-    private void generateTmpFile(String filename) {
+    @Override
+    public void generateTmpFile(String filename) {
         List<UserRate> userRates = userRateRepository.findAll();
 
         File file = new File(filename);
@@ -79,24 +78,13 @@ public class RecommendServiceImpl implements RecommendService {
         } else {
             userRateRepository.save(userRate);
         }
-        String filename = System.getProperty("java.io.tmpdir") + "ratings.tmp";
+        String filename = System.getProperty("java.io.tmpdir") + "/ratings.tmp";
         generateTmpFile(filename);
         try {
             RecommendationUtil.getItemBasedRecommendation(filename, RECOMMEND_NUM);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-//        long count = userRateRepository.count();
-//        if (count % TRIGGER == 0) {
-//            String filename = System.getProperty("java.io.tmpdir") + "ratings.tmp";
-//            generateTmpFile(filename);
-//            try {
-//                RecommendationUtil.getItemBasedRecommendation(filename, RECOMMEND_NUM);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
     }
 
     @Override
